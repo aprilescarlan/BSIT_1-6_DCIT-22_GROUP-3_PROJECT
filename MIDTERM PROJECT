@@ -1,0 +1,343 @@
+from tkinter import *
+from pygame import mixer
+from tkinter import filedialog
+import os
+from time import strftime
+import random
+
+def button_press(num):
+
+    global equation_text
+
+    equation_text = equation_text + str(num)
+
+    equation_label.set(equation_text)
+
+def equals():
+
+    global equation_text
+
+    try:
+
+        total = str(eval(equation_text))
+
+        equation_label.set(total)
+
+        equation_text = total
+
+    except SyntaxError:
+
+        equation_label.set("error")
+
+        equation_text = ""
+
+    except ZeroDivisionError:
+
+        equation_label.set("arithmetic error")
+
+        equation_text = ""
+
+def clear():
+
+    global equation_text
+
+    equation_label.set("")
+
+    equation_text = ""
+
+#clock func
+def time():
+    string = strftime("%I:%M:%S %p")
+    my_label.config(text=string)
+    my_label.after(1000, time)
+
+#music window
+def open():
+    window2=Toplevel()
+    window2.title("window2")
+    window2.geometry("920x670", )
+    window2.config(bg="blue")
+
+    mixer.init()
+    def open_folder():
+        path = filedialog.askdirectory()
+        if path:
+            os.chdir(path)
+            songs=os.listdir(path)
+            print(songs)
+            for song in songs:
+                if song.endswith(".mp3"):
+                    playlist.insert(END, song)
+
+    def play_song():
+        music_name = playlist.get(ACTIVE)
+        print(music_name[0:-4])
+        mixer.music.load(playlist.get(ACTIVE))
+        mixer.music.play()
+
+    Top = PhotoImage(file=r"C:\Users\Amelito\OneDrive\Pictures\top.png")
+    Label(window2, image=Top, bg="cyan").pack()
+
+    Buttom = PhotoImage(file=r"C:\Users\Amelito\OneDrive\Pictures\buttom.png")
+    Label(window2, image=Buttom).pack()
+
+    play_button = PhotoImage(file=r"C:\Users\Amelito\OneDrive\Pictures\play.png")
+    Button(window2, image=play_button,bd=0, command=play_song).place(x=100, y=400)
+
+    pause_button = PhotoImage(file=r"C:\Users\Amelito\OneDrive\Pictures\pause.png")
+    Button(window2, image=pause_button, bd=0, command=mixer.music.stop).place(x=200, y=400)
+
+    music_frame = Frame(window2, bd=2, relief=RIDGE)
+    music_frame.place(x=350, y=350, width=560, height=250)
+
+    Button(window2, text="Open Folder", width=15, height=2, font=("arial",10), fg="blue", command=open_folder).place(x=330, y=300)
+
+    playlist = Listbox(music_frame, width=100, font=("arial", 10), bg="grey", fg="black", selectbackground="cyan",
+                       cursor="hand2", bd=0)
+    playlist.pack(side=LEFT, fill=BOTH)
+
+
+
+
+    window2.mainloop()
+
+
+    window2.mainloop()
+#painting window
+def open2():
+    window3=Toplevel()
+    window3.title("PAINTING")
+    window3.geometry("500x500",)
+    window3.config(bg='#C0C5CD')
+
+    current_x, current_y = 0, 0
+
+    def xy_pos(event):
+        global current_x, current_y
+        current_x, current_y = event.x, event.y
+
+    def draw_line(event):
+        global current_x, current_y
+        canvas.create_line(current_x, current_y, event.x, event.y)
+        current_x, current_y = event.x, event.y
+
+    def clear_paint():
+        canvas.delete('all')
+
+    window3.rowconfigure(0, weight=1)
+    window3.columnconfigure(0, weight=1)
+
+    Menubar = Menu(window3)
+    window3.config(menu=Menubar)
+    Menubar.add_command(label="clear everything", command=clear_paint)
+
+    canvas = Canvas(window3)
+    canvas.grid(row=0, column=0, sticky="nswe")
+    canvas.bind("<Button-1>", xy_pos)
+    canvas.bind("<B1-Motion>", draw_line)
+
+    window3.mainloop()
+#Game window
+def open3():
+    window4 = Toplevel()
+    window4.title("GAMES")
+    window4.geometry("500x500", )
+    window4.config(bg='#C0C5CD')
+
+    def number(x):
+        if x == '\u2680':
+            return (1)
+        elif x == '\u2681':
+            return (2)
+        elif x == '\u2682':
+            return (3)
+        elif x == '\u2683':
+            return (4)
+        elif x == '\u2684':
+            return (5)
+        elif x == '\u2685':
+            return (6)
+
+    def roll_dice():
+        d1 = random.choice(my_dice)
+        d2 = random.choice(my_dice)
+
+        # UPdate labels
+        label1.config(text=d1)
+        label2.config(text=d2)
+
+        # determine dice nuber
+        sd1 = number(d1)
+        sd2 = number(d2)
+
+        # update sub labels
+        sub_dice_label1.config(text=sd1)
+        sub_dice_label2.config(text=sd2)
+
+        # update total label
+        total = sd1 + sd2
+        total_label.config(text=f"Your Score: {total}")
+
+    # dice list
+    my_dice = ['\u2680', '\u2681', '\u2682', '\u2683', '\u2684', '\u2685']
+
+    # create frame
+    frame = Frame(window4)
+    frame.pack(pady=20)
+
+    # dice labels
+    label1 = Label(frame, text='', font=("helvetica", 100), fg="red")
+    label1.grid(row=0, column=0, padx=5)
+    sub_dice_label1 = Label(frame, text="")
+    sub_dice_label1.grid(row=1, column=0)
+
+    label2 = Label(frame, text='', font=("helvetica", 100), fg="red")
+    label2.grid(row=0, column=1, padx=5)
+    sub_dice_label2 = Label(frame, text="")
+    sub_dice_label2.grid(row=1, column=1)
+
+    # button
+    Button1 = Button(window4, text="Roll Dice", command=roll_dice)
+    Button1.pack(pady=20)
+
+    # create total
+    total_label = Label(window4, text="", font=("Helvetica", 24), fg="grey")
+    total_label.pack(pady=40)
+
+    Bntclose = Button(window4, text="close me", command=window4.destroy)
+    Bntclose.pack(pady=10)
+
+    roll_dice()
+
+    window4.mainloop()
+
+#main window
+window = Tk()
+window.title("Rainbow Calculator")
+window.geometry("500x750")
+window.config(bg='#000000')
+
+equation_text = ""
+
+equation_label = StringVar()
+
+Label1 = Label(window, textvariable=equation_label, font=('consolas',20), background="cyan", width=20, height=2)
+Label1.pack()
+
+#create frame
+frame = Frame(window)
+frame.pack()
+
+#Buttons
+button1 = Button(frame, text=1, height=2, width=7, font=35,
+                 command=lambda: button_press(1))
+button1.grid(row=0, column=0)
+
+button2 = Button(frame, text=2, height=2, width=7, font=35,
+                 command=lambda: button_press(2))
+button2.grid(row=0, column=1)
+
+button3 = Button(frame, text=3, height=2, width=7, font=35,
+                 command=lambda: button_press(3))
+button3.grid(row=0, column=2)
+
+button4 = Button(frame, text=4, height=2, width=7, font=35,
+                 command=lambda: button_press(4))
+button4.grid(row=1, column=0)
+
+button5 = Button(frame, text=5, height=2, width=7, font=35,
+                 command=lambda: button_press(5))
+button5.grid(row=1, column=1)
+
+button6 = Button(frame, text=6, height=2, width=7, font=35,
+                 command=lambda: button_press(6))
+button6.grid(row=1, column=2)
+
+button7 = Button(frame, text=7, height=2, width=7, font=35,
+                 command=lambda: button_press(7))
+button7.grid(row=2, column=0)
+
+button8 = Button(frame, text=8, height=2, width=7, font=35,
+                 command=lambda: button_press(8))
+button8.grid(row=2, column=1)
+
+button9 = Button(frame, text=9, height=2, width=7, font=35,
+                 command=lambda: button_press(9))
+button9.grid(row=2, column=2)
+
+button0 = Button(frame, text=0, height=2, width=7, font=35,
+                 command=lambda: button_press(0))
+button0.grid(row=3, column=0)
+
+#OPERATORS
+plus = Button(frame, text='+', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('+'))
+plus.grid(row=0, column=3)
+
+minus = Button(frame, text='-', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('-'))
+minus.grid(row=1, column=3)
+
+multiply = Button(frame, text='*', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('*'))
+multiply.grid(row=2, column=3)
+
+divide = Button(frame, text='/', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('/'))
+divide.grid(row=3, column=3)
+
+modulus = Button(frame, text='%', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('%'))
+modulus.grid(row=3, column=1)
+
+double_div = Button(frame, text='//', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('//'))
+double_div.grid(row=3, column=2)
+
+bitewise_ope = Button(frame, text='&', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('&'))
+bitewise_ope.grid(row=4, column=0)
+
+bitewise_or = Button(frame, text='|', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('|'))
+bitewise_or.grid(row=4, column=1)
+
+XOR = Button(frame, text='^', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('^'))
+XOR.grid(row=4, column=2)
+
+right_shift = Button(frame, text='>>', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('>>'))
+right_shift.grid(row=4, column=3)
+
+left_shift = Button(frame, text='<<', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('<<'))
+left_shift.grid(row=5, column=0)
+
+exponent_ass = Button(frame, text='**', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('**'))
+exponent_ass.grid(row=5, column=1)
+
+decimal = Button(frame, text='.', height=2, width=7, font=35, bg="#B2B2B2",
+                 command=lambda: button_press('.'))
+decimal.grid(row=5, column=2)
+
+equal = Button(frame, text='=', height=2, width=7, font=35, bg="#B2B2B2",
+               command=equals)
+equal.grid(row=5, column=3)
+
+clear = Button(window, text='clear', height=2, width=20, font=35, bg="#FF6D28",
+               command=clear)
+clear.pack()
+
+#create button to open other window
+btnOpen = Button(window, text="Open Music", bg="#00ABB3", command=open).pack(pady=10)
+btnOpen2 = Button(window,text="Open Painting", bg="#00ABB3", command=open2).pack(pady=10)
+btnOpen3 = Button(window,text="Open Games", bg="#00ABB3", command=open3).pack(pady=10)
+
+#clock label
+my_label = Label(window, font=("ds-digital", 50), background="black", foreground="cyan", width=25, height=2)
+my_label.pack()
+time()
+
+window.mainloop()
